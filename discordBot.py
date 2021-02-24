@@ -26,5 +26,5 @@ async def on_message(message):
     if message.content.startswith('$info'):
         await message.channel.send('Discord BOT, coded by PADi\n(https://github.com/padi48)')
 
-
+#token is defined in another .env file 
 client.run(os.getenv('TOKEN'))
