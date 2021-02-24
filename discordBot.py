@@ -1,3 +1,5 @@
+#UPDATING IT REGURARLY
+
 '''
 very basic discord bot being developed by me
 currently I'm just learning, so it doesn't have 
