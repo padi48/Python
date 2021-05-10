@@ -27,12 +27,19 @@ class Pokemon(User):
         self.computer_hp = random.randint(0,320)
 
     def choose(self):
-        choice = input('Do you want to battle(B), compare cards(C)? ')
+        choice = input('Do you want to battle(B), compare cards(C) or gamble(G)? ')
         while choice != 'B' or 'C':
             if choice == 'B':
                 self.battle()
             if choice == 'C':
                 self.compare()
+            if choice == 'G':
+                self.gamble()
+                choice = input('Do you want to battle(B), compare cards(C)? ')
+                if choice == 'B':
+                    self.battle()
+                if choice == 'C':
+                    self.compare()
             break
 
     def battle(self):
@@ -73,5 +80,14 @@ class Pokemon(User):
         else:
             print('TIE!')
             print('You have {}, {}HP \nOpponent has {}, {}HP'.format(self.user, self.user_hp, self.computer, self.computer_hp))
+
+    def gamble(self):
+        print()
+        print('CHOOSING YOUR NEW CARD')
+        print('Your card was {} with {}HP'.format(self.user, self.user_hp))
+        
+        self.user = random.choice(card_names)
+        self.user_hp = random.randint(0,320)
+        print('Your new card is {} with {}HP'.format(self.user, self.user_hp))
 
 Pokemon().choose()
