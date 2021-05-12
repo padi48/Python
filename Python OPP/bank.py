@@ -47,6 +47,18 @@ class Bank(User):
             print("")
             print("New account balance is:",self.balance)
 
+    def lean(self):
+        self.loan = int(input("How much money do you need? "))
+        self.interest_rate = round(self.loan + (self.loan * 0.15))
+        if self.loan <= self.balance:
+            print("You already have that much money.")
+            self.balance = self.balance - self.loan
+            print("{} has been removed from your balance! Your new balance is {}".format(self.loan, self.balance))
+        else:
+            self.balance = self.balance + self.loan 
+            print("You recieved {} to your balance! Your new balance is {}".format(self.loan, self.balance))
+            print("You have to pay back {} in 30 days!".format(self.interest_rate))
+
     def view_balance(self):
         self.show_details()
         print("User's balance is:", self.balance)
@@ -54,4 +66,5 @@ class Bank(User):
 matt = Bank("Matthew", "Male", 18, "Programmer")
 matt.deposit(100)
 matt.withdraw(50)
+matt.lean()
 matt.view_balance()
