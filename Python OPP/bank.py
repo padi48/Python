@@ -1,70 +1,89 @@
-'''
-Banking System 
+import time
 
-User class:
-- Holds details about the user
-- Fuction to show user details
+class User:
+    def __init__(self):
+        self.account_name = str(input('Your name: '))
+        self.account_number = int(input('Account number: '))
+        self.amount = int(input('How much would you like to deposit?\n'))
+        self.balance = self.amount
+        print("Registration successful!")
 
-Bank class:
-- Holds details about the account balance
-- Functions to deposit/withdraw/view user balance
-'''
-
-class User():
-    def __init__(self, name, gender, age, job):
-        self.name = name
-        self.gender = gender
-        self.age = age
-        self.job = job
-
-    def show_details(self):
-        print("User's details:")
-        print("")
-        print("Name:", self.name)
-        print("Gender:",self.gender)
-        print("Age:",self.age)
-        print("Job:",self.job)
 
 class Bank(User):
-    def __init__(self, name, gender, age, job):
-        super().__init__(name, gender, age, job)
-        self.balance = 0
+    def __init__(self):
+        super().__init__()
 
-    def deposit(self, amount):
-        self.amount = amount
-        self.balance = self.balance + amount
-        print("Account balance has been updated!")
-        print("")
-        print("New account balance is:", self.balance)
+    def show_details(self):
+        print()
+        print("{}'s account details".format(self.account_name))
+        print("Name: ", self.account_name)
+        print("Account number: ", self.account_number)
+        print("Balance: ", self.balance)
 
-    def withdraw(self, amount):
-        self.amount = amount
-        if self.amount > self.balance:
-            print("Insufficient Funds | Balance available:", self.balance)
-        else:
-            self.balance = self.balance - self.amount
-            print("Account balance has been updated!")
-            print("")
-            print("New account balance is:",self.balance)
+    def deposit(self):
+        print("DEPOSIT")
+        print("Your current balance is {}".format(self.balance))
+        time.sleep(2)
 
-    def lean(self):
-        self.loan = int(input("How much money do you need? "))
-        self.interest_rate = round(self.loan + (self.loan * 0.15))
-        if self.loan <= self.balance:
-            print("You already have that much money.")
-            self.balance = self.balance - self.loan
-            print("{} has been removed from your balance! Your new balance is {}".format(self.loan, self.balance))
-        else:
-            self.balance = self.balance + self.loan 
-            print("You recieved {} to your balance! Your new balance is {}".format(self.loan, self.balance))
-            print("You have to pay back {} in 30 days!".format(self.interest_rate))
+        deposit_amount = int(input('How much would you like to deposit?\n'))
+        self.balance = self.balance + deposit_amount
+        print("Transaction successful! Your balance is {} now!".format(self.balance))
 
-    def view_balance(self):
-        self.show_details()
-        print("User's balance is:", self.balance)
+    def withdraw(self):
+        print("WITHDRAW")
+        print("Your current balance is {}".format(self.balance))
+        time.sleep(2)
 
-matt = Bank("Matthew", "Male", 18, "Programmer")
-matt.deposit(100)
-matt.withdraw(50)
-matt.lean()
-matt.view_balance()
+        withdraw_amount = int(input("How much would you like to withdraw?\n"))
+        self.balance = self.balance - withdraw_amount
+        print("Transaction successful! Your balance is {}!".format(self.balance))
+
+        if withdraw_amount > self.balance:
+            print("Insufficient Funds | Balance available: {}".format(self.balance))
+            withdraw_amount = int(input("How much would you like to withdraw?\n"))
+
+
+    def loan(self):
+        print("LOAN")
+        print("Your current balance is {}".format(self.balance))
+        time.sleep(2)
+
+        loan_amount = int(input("How much would you like to loan?\n"))
+        self.balance = self.balance + loan_amount
+        print("Transaction successful! Your balance is {}!".format(self.balance))
+
+        if loan_amount <= self.balance:
+            print("You already have that much, current account balance is {}!".format(self.balance))
+            withdraw = input("Would you like to withdraw {}?".format(loan_amount))
+            
+            if withdraw == 'yes':
+                self.balance = self.balance - withdraw
+                print("Transaction successful! Your balance is {}!".format(self.balance))
+            
+    def intro(self):
+        print("***PADi BANK***")
+        print("Hey, welcome to our new bank!")
+        print("Whatever it is that you want, just choose the number and we'll help!")
+        time.sleep(2)
+
+        print("***CHOICES***")
+        print("1. Deposit money")
+        print("2. Withdraw money")
+        print("3. Get a loan")
+        print("4. View account details")
+
+        choices = ['1', '2', '3', '4']
+        choice = input("How can we help you? ")
+        while choice not in choices:
+            choice = input("How can we help you? ")
+
+        if choice == '1':
+            self.deposit()
+        elif choice == '2':
+            self.withdraw()
+        elif choice == '3':
+            self.loan()
+        elif choice == '4':
+            self.show_details()
+
+Bank().intro()
