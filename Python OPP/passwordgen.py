@@ -11,7 +11,7 @@ class Password(User):
         super().__init__(name)
         self.password = ''
 
-        while len(self.password) < self.pw_length:
+        while len(self.password) != self.pw_length:
             random_char = random.choice(string.printable)
             self.password = self.password + random_char
 
