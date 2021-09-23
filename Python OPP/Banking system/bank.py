@@ -1,10 +1,39 @@
 import time
 from user import User
 
+file = open("accounts.txt", "a+")
+for line in file:
+    line.split()
+
 class Bank(User):
     def __init__(self):
         super().__init__() 
         self.balance = 0
+        self.id = id
+
+        print("***PADi BANK***")
+        print("Hey, welcome to our new bank!")
+        time.sleep(2)
+
+        print("***CHOICES***")
+        print("1. Deposit money")
+        print("2. Withdraw money")
+        print("3. Get a loan")
+        print("4. View account details")
+
+        choices = ['1', '2', '3', '4']
+        choice = input("How can we help you? ")
+        while choice not in choices:
+            choice = input("How can we help you? ")
+
+        if choice == '1':
+            self.deposit()
+        elif choice == '2':
+            self.withdraw()
+        elif choice == '3':
+            self.loan()
+        elif choice == '4':
+            self.show_details()
 
     def show_details(self):
         file = open("accounts.txt", "r")
@@ -57,27 +86,4 @@ class Bank(User):
                 self.balance = self.balance - withdraw
                 print("Transaction successful! Your balance is ${}!".format(self.balance))
             
-    def intro(self):
-        print("***PADi BANK***")
-        print("Hey, welcome to our new bank!")
-        time.sleep(2)
-
-        print("***CHOICES***")
-        print("1. Deposit money")
-        print("2. Withdraw money")
-        print("3. Get a loan")
-        print("4. View account details")
-
-        choices = ['1', '2', '3', '4']
-        choice = input("How can we help you? ")
-        while choice not in choices:
-            choice = input("How can we help you? ")
-
-        if choice == '1':
-            self.deposit()
-        elif choice == '2':
-            self.withdraw()
-        elif choice == '3':
-            self.loan()
-        elif choice == '4':
-            self.show_details()
+        
