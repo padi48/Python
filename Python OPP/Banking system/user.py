@@ -11,7 +11,7 @@ class User(object):
 
         self.firstname = input("Enter your first name: ")
         self.lastname = input("Enter your last name: ")
-        self.password = getpass.getpass(prompt="Enter password: ", stream="*")
+        self.password = getpass.getpass(prompt="Enter password: ")
 
         self.id = random.randint(1000,9999)
 
@@ -26,13 +26,11 @@ class User(object):
         print("Your details:")
         print("First name:", self.firstname)
         print("Last name:", self.lastname)
-        print("Password: ")
         print("Account ID:", self.id)
 
         text = f"{self.firstname} {self.lastname} | {self.password} | {self.id}\n"
         file.write(text)
         file.close()
-
 
     def login(self):
         print("Enter your ID: ")
