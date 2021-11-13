@@ -38,6 +38,14 @@ class Inventory(Product):
         for i in self.inventory:
             self.print_item(i)
 
+    def find_item(self):
+        print("What are you searching for?")
+        name = input("-")
+
+        for i in self.inventory:
+            if i.name.lower() == name.lower():
+                self.print_item(i)
+
     def inventory_sum(self):
         all_quantity = 0
         all_price = 0
@@ -94,7 +102,7 @@ class Inventory(Product):
         with open("inventory.csv", "w", newline="") as file:
             writer = csv.writer(file, delimiter=" ")
             for i in self.inventory:
-                writer.writerow([i.name, i.id, "|", "$", i.price, "|", "Quantity:", i.quantity])
+                writer.writerows([i.name], [i.id], ["|"], ["$"], [i.price], ["|"], ["Quantity:"], [i.quantity])
 
     
 
@@ -103,5 +111,5 @@ if __name__ == '__main__':
     inv.add_to_inventory(apple)
     inv.add_to_inventory(cherry)
     inv.add_to_inventory(milk)
-    inv.inventory_sum()
+    inv.find_item()
     inv.save()
