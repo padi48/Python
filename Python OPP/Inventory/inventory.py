@@ -7,7 +7,10 @@ Author: Máté Pados
 Idea: github.com/karan
 """
 import csv
-from product import *
+from os import sep, write
+from products import *
+
+#Inventory: on-order
 
 class Product:
     def __init__(self, name, id, price, quantity):
@@ -20,23 +23,34 @@ class Inventory(Product):
     def __init__(self, name=None, id=0, price=0, quantity=0):
         super().__init__(name, id, price, quantity)
         self.inventory = []
+        self.onOrder = []
 
     def print_item(self, i):
         print(f"{i.name} {i.id} | ${i.price} | Quantity: {i.quantity}")
 
 
     def add_to_inventory(self, item):
-        self.inventory.append(item)
-        print(f"Item \"{item.name}\" added to inventory!")
+        with open("inventory.csv", "a", newline="\n") as file:
+            writer = csv.writer(file, delimiter=" ")
+            writer.writerow([item.name, item.id, "|", "$", item.price, "|", "Quantity:", item.quantity])
+
 
     def delete_from_inventory(self, item):
-        self.inventory.remove(item)
+        with open("inventory.csv", "r") as file:
+            reader = csv.reader(file)
+
+            for row in reader:
+                if item in row:
+                    print("here")
 
     def list_inventory(self):
-        print("Inventory:")
+        print("Current stock:")
 
-        for i in self.inventory:
-            self.print_item(i)
+        with open("inventory.csv", "r") as file:
+            reader = csv.reader(file)
+
+            for row in reader:
+                print(row[0])
 
     def find_item(self):
         print("What are you searching for?")
@@ -97,19 +111,56 @@ class Inventory(Product):
 
                     print("Item edited successfully!")
                     self.print_item(i)
+        
+    def order(self):
+        print("Current stock:")
+        for i in self.inventory:
+            print(i.quantity, i.name, end="\n",)
+
+        print()
+        print("Enter order informations:")
+        name = input("Name: ")
+        for i in self.inventory:
+            if name.lower() == i.name.lower():
+                print(f"We already have {name} in stock!")
+                print("Would you like to see current orders?")
+                a = input().lower()
+                if a == "yes":  
+                    self.print_orderlist()
+                quit()
+
+        quantity = input("Quantity: ")
+
+        print(f"Are you sure you want to order {quantity} {name}?")
+        a = input().lower()
+        if a == "yes":
+            item = Product(name=name, id=0, price=0, quantity=quantity)
+            self.onOrder.append(item)  
+            print(f"{quantity} {name} ordered!")
+            
+            
+    def print_orderlist(self):
+        print("Current order list:")
+        for i in self.onOrder:
+            print(i.name, i.quantity, end="\n")
 
     def save(self):
-        with open("inventory.csv", "w", newline="") as file:
-            writer = csv.writer(file, delimiter=" ")
+        with open("inventory.csv", "w+", newline="") as file:
+            writer = csv.writer(file, delimiter=" ", escapechar=" ", quoting=csv.QUOTE_NONE)
+            
+            #items on stock
             for i in self.inventory:
-                writer.writerows([i.name], [i.id], ["|"], ["$"], [i.price], ["|"], ["Quantity:"], [i.quantity])
+                writer.writerow([i.name, i.id, "|", "$", i.price, "|", "Quantity:", i.quantity])
+            
+            #3 empty rows
+            for i in range(3):
+                writer.writerow([])
+            
+            #items on order
+            for i in self.onOrder:
+                writer.writerow(["ON ORDER:"])
+                writer.writerow([i.name, i.quantity, "pcs"])
 
-    
 
 if __name__ == '__main__':
-    inv = Inventory()
-    inv.add_to_inventory(apple)
-    inv.add_to_inventory(cherry)
-    inv.add_to_inventory(milk)
-    inv.find_item()
-    inv.save()
+    inv = Inventory()  
