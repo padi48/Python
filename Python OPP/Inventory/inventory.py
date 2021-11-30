@@ -7,7 +7,7 @@ Author: Máté Pados
 Idea: github.com/karan
 """
 import csv
-from os import sep, write
+from os import read, sep, write
 from products import *
 
 #Inventory: on-order
@@ -35,13 +35,23 @@ class Inventory(Product):
             writer.writerow([item.name, item.id, "|", "$", item.price, "|", "Quantity:", item.quantity])
 
 
-    def delete_from_inventory(self, item):
-        with open("inventory.csv", "r") as file:
-            reader = csv.reader(file)
+    def delete_from_inventory(self, item=None):
+        print("Enter the name of the item you want to delete:")
+        item = input("- ").lower()
+
+        l = []
+        with open("inventory.csv", "r") as readFile:
+            reader = csv.reader(readFile)
 
             for row in reader:
-                if item in row:
-                    print("here")
+                l.append(row)
+                for name in row:
+                    if item in name.lower():
+                        l.remove(row)
+
+        with open("inventory.csv", "w", newline="\n") as file:
+            writer = csv.writer(file)
+            writer.writerows(l)
 
     def list_inventory(self):
         print("Current stock:")
@@ -54,18 +64,28 @@ class Inventory(Product):
 
     def find_item(self):
         print("What are you searching for?")
-        name = input("-")
+        name = input("- ").lower()
 
-        for i in self.inventory:
-            if i.name.lower() == name.lower():
-                self.print_item(i)
+        with open("inventory.csv", "r") as file:
+            reader = csv.reader(file)
+
+            for row in reader:
+                for item in row:
+                    if name in item.lower():
+                        print(item)
 
     def inventory_sum(self):
         all_quantity = 0
         all_price = 0
-        for item in self.inventory:
-            all_quantity += item.quantity
-            all_price += item.price * item.quantity
+        with open("inventory.csv", "r") as file:
+            reader = csv.reader(file)
+
+            for row in reader:
+                self.inventory.append(row)
+        
+        for i in self.inventory:
+            print(i, end="\n")
+
 
         print(f"{all_quantity} items for ${int(all_price)} available at the moment")
                     
@@ -113,31 +133,29 @@ class Inventory(Product):
                     self.print_item(i)
         
     def order(self):
-        print("Current stock:")
-        for i in self.inventory:
-            print(i.quantity, i.name, end="\n",)
+        self.list_inventory()
 
-        print()
-        print("Enter order informations:")
-        name = input("Name: ")
-        for i in self.inventory:
-            if name.lower() == i.name.lower():
-                print(f"We already have {name} in stock!")
-                print("Would you like to see current orders?")
-                a = input().lower()
-                if a == "yes":  
-                    self.print_orderlist()
-                quit()
+        with open("inventory.csv", "r") as file:
+            reader = csv.reader(file)
 
-        quantity = input("Quantity: ")
+            print()
+            print("Enter order informations:")
+            name = input("Name: ")
+            for row in reader:
+                if name.lower() in row[0].lower():
+                    print(f"We already have {name} in stock!")
+                    quit()
 
-        print(f"Are you sure you want to order {quantity} {name}?")
-        a = input().lower()
-        if a == "yes":
-            item = Product(name=name, id=0, price=0, quantity=quantity)
-            self.onOrder.append(item)  
-            print(f"{quantity} {name} ordered!")
-            
+            quantity = input("Quantity: ")
+
+            print(f"Are you sure you want to order {quantity} {name}?")
+            a = input().lower()
+            if a == "yes":
+                item = Product(name=name, id=0, price=0, quantity=quantity)
+                with open("inventory.csv", "a", newline="\n") as file:
+                    writer = csv.writer(file, delimiter=" ", escapechar=" ", quoting=csv.QUOTE_NONE)
+                    writer.writerow([item.name, "|", "Quantity:", item.quantity, "ON ORDER"])
+                     
             
     def print_orderlist(self):
         print("Current order list:")
@@ -146,7 +164,7 @@ class Inventory(Product):
 
     def save(self):
         with open("inventory.csv", "w+", newline="") as file:
-            writer = csv.writer(file, delimiter=" ", escapechar=" ", quoting=csv.QUOTE_NONE)
+            writer = csv.writer(file, delimiter=" ", quoting=csv.QUOTE_MINIMAL)
             
             #items on stock
             for i in self.inventory:
@@ -164,3 +182,4 @@ class Inventory(Product):
 
 if __name__ == '__main__':
     inv = Inventory()  
+    inv.order()
