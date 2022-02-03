@@ -1,14 +1,19 @@
 """
 Product Inventory Project - Create an application which manages an inventory of products. 
-Create a product class which has a price, id, and quantity on hand. 
-Then create an inventory class which keeps track of various products and can sum up the inventory value.
+Products have a price, id, and quantity on hand. 
+Then the inventory keeps track of various products and can sum up the inventory value.
+
 
 Author: Máté Pados
 Idea: github.com/karan
 """
+
 import csv
-from os import read, sep, write
 from products import *
+from os import path
+import pandas as pd
+
+file_exists = path.isfile("inventory.csv")
 
 #Inventory: on-order
 
@@ -25,14 +30,19 @@ class Inventory(Product):
         self.inventory = []
         self.onOrder = []
 
-    def print_item(self, i):
-        print(f"{i.name} {i.id} | ${i.price} | Quantity: {i.quantity}")
+    def print_item(self, id):
+        print(f"{id.name} {id.id} | ${id.price} | Quantity: {id.quantity}")
 
 
     def add_to_inventory(self, item):
+        item_header = ["name", "id", "price", "quantity"]
+
         with open("inventory.csv", "a", newline="\n") as file:
             writer = csv.writer(file, delimiter=" ")
-            writer.writerow([item.name, item.id, "|", "$", item.price, "|", "Quantity:", item.quantity])
+
+            if not file_exists:
+                writer.writerow(item_header)
+            writer.writerow([item.name, item.id, item.price, item.quantity])
 
 
     def delete_from_inventory(self, item=None):
@@ -89,49 +99,8 @@ class Inventory(Product):
 
         print(f"{all_quantity} items for ${int(all_price)} available at the moment")
                     
-    def edit_item(self, itemId):
-        for i in self.inventory:
-            if i.id == itemId:
-                print("Editing:", i.name)
-                print("Please choose from options:")
-                print("1. Edit name")
-                print("2. Edit id")
-                print("3. Edit price")
-                print("4. Edit quantity")
-                x = int(input("Choice: "))
+    #def edit_item(self, itemId):
 
-                if x == 1:
-                    print("Enter new name:")
-                    new_name = input()
-                    i.name = new_name
-
-                    print("Item edited successfully!")
-                    self.print_item(i)
-
-                if x == 2:
-                    print("Enter new id:")
-                    new_id = input()
-                    i.id = new_id
-
-                    print("Item edited successfully!")
-                    self.print_item(i)
-
-                if x == 3:
-                    print("Enter new price:")
-                    new_price = input()
-                    i.price = new_price
-
-                    print("Item edited successfully!")
-                    self.print_item(i)
-
-                if x == 4:
-                    print("Enter quantity:")
-                    new_quantity = input()
-                    i.quantity = new_quantity
-
-                    print("Item edited successfully!")
-                    self.print_item(i)
-        
     def order(self):
         self.list_inventory()
 
@@ -162,24 +131,7 @@ class Inventory(Product):
         for i in self.onOrder:
             print(i.name, i.quantity, end="\n")
 
-    def save(self):
-        with open("inventory.csv", "w+", newline="") as file:
-            writer = csv.writer(file, delimiter=" ", quoting=csv.QUOTE_MINIMAL)
-            
-            #items on stock
-            for i in self.inventory:
-                writer.writerow([i.name, i.id, "|", "$", i.price, "|", "Quantity:", i.quantity])
-            
-            #3 empty rows
-            for i in range(3):
-                writer.writerow([])
-            
-            #items on order
-            for i in self.onOrder:
-                writer.writerow(["ON ORDER:"])
-                writer.writerow([i.name, i.quantity, "pcs"])
-
 
 if __name__ == '__main__':
-    inv = Inventory()  
-    inv.order()
+    inv = Inventory() 
+    inv.list_inventory()
