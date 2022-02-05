@@ -9,40 +9,51 @@ Idea: github.com/karan
 """
 
 import csv
+import shutil
 from products import *
 from os import path
-import pandas as pd
+from tempfile import NamedTemporaryFile
 
 file_exists = path.isfile("inventory.csv")
 
-#Inventory: on-order
-
 class Product:
-    def __init__(self, name, id, price, quantity):
+    def __init__(self, name, price, quantity):
         self.name = name
-        self.id = id
         self.price = float(price)
         self.quantity = quantity
 
 class Inventory(Product):
-    def __init__(self, name=None, id=0, price=0, quantity=0):
-        super().__init__(name, id, price, quantity)
+    def __init__(self, name=None, price=0, quantity=0):
+        super().__init__(name, price, quantity)
         self.inventory = []
         self.onOrder = []
 
-    def print_item(self, id):
-        print(f"{id.name} {id.id} | ${id.price} | Quantity: {id.quantity}")
+    #def print_item(self, item):
 
+    def new_id(self):
+        with open("inventory.csv", "r") as file:
+            reader = csv.reader(file)
+            reader_list = list(reader)
+
+            return len(reader_list)
 
     def add_to_inventory(self, item):
-        item_header = ["name", "id", "price", "quantity"]
+        fieldnames = ["id", "name", "price", "quantity"]
 
         with open("inventory.csv", "a", newline="\n") as file:
-            writer = csv.writer(file, delimiter=" ")
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            next_id = self.new_id()
 
+            #write header only once
             if not file_exists:
-                writer.writerow(item_header)
-            writer.writerow([item.name, item.id, item.price, item.quantity])
+                writer.writeheader()
+
+            writer.writerow({
+                "id": next_id,
+                "name": item.name,
+                "price": item.price,
+                "quantity": item.quantity,
+            })
 
 
     def delete_from_inventory(self, item=None):
@@ -69,8 +80,8 @@ class Inventory(Product):
         with open("inventory.csv", "r") as file:
             reader = csv.reader(file)
 
-            for row in reader:
-                print(row[0])
+            for item in reader:
+                print(type(item))
 
     def find_item(self):
         print("What are you searching for?")
@@ -99,11 +110,18 @@ class Inventory(Product):
 
         print(f"{all_quantity} items for ${int(all_price)} available at the moment")
                     
-    #def edit_item(self, itemId):
+    def edit_item(self):
+        temp_file = NamedTemporaryFile(delete=False)
+
+        with open("inventory.csv", "rb") as csvfile, temp_file:
+            reader = csv.DictReader(csvfile)
+            writer = csv.DictWriter(temp_file)
+            writer.writeheader()
+
 
     def order(self):
         self.list_inventory()
-
+ 
         with open("inventory.csv", "r") as file:
             reader = csv.reader(file)
 
@@ -133,5 +151,4 @@ class Inventory(Product):
 
 
 if __name__ == '__main__':
-    inv = Inventory() 
-    inv.list_inventory()
+    inv = Inventory()
