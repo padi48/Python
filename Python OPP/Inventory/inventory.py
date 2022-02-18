@@ -12,8 +12,8 @@ from asyncore import write
 import csv
 import shutil
 from products import *
-from os import path
 from tempfile import NamedTemporaryFile
+from os import path
 
 file_exists = path.isfile("inventory.csv")
 
@@ -93,7 +93,6 @@ class Inventory(Product):
             writer = csv.writer(file)
             writer.writerows(l)
 
-
     def list_inventory(self):
         print("Current stock:")
 
@@ -119,14 +118,10 @@ class Inventory(Product):
         print(f"{all_quantity} items for ${int(all_price)} available at the moment")
                     
     def edit_item(self):
-        """
-        write data untill row that user wants to edit
-        edit the row
-        write remaining data
-        """
         print("EDIT ITEM PANEL")
+        self.list_inventory()
         l = []
-        row_id = int(input("Enter ID of row you want to edit: "))
+        row_id = input("Enter ID of row you want to edit: ")
 
         with open("inventory.csv", "r") as file:
             reader = csv.DictReader(file)
@@ -134,21 +129,35 @@ class Inventory(Product):
             for row in reader:
                 l.append(row)
             
-        for i in l:
-            if i["id"] == row_id:
-                choice = input("Would you like to edit:\n1. Name\n2. Price\n3. Quantity\n- ")
-                if choice == 1:
-                    name = str(input("Enter new name: "))
-                    i["name"] = name
-                elif choice == 2:
-                    price = float(input("Enter new price: "))
-                    i["price"] = price
-                elif choice == 3:
-                    quantity = int(input("Enter new quantity: "))
-                    i["quantity"] = quantity
+        for item in l:
+            if row_id == item["id"]:
+                print("Choose from the options below:")
+                choice = input("1. Name\n2. Price\n3. Quantity\n- ")
+                
+                if choice == "1":
+                    new_name = input("Enter new name: ")
+                    item["name"] = new_name
+                if choice == "2":
+                    new_price = input("Enter new price: $")
+                    item["price"] = new_price
+                if choice == "3":
+                    new_quantity = input("Enter new quantity: ")
+                    item["quantity"] = new_quantity
 
-            self.add_to_inventory(i)
-
+        with open("inventory.csv", "w", newline="\n") as file:
+            fieldnames = ["id", "name", "price", "quantity"]
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            next_id = self.new_id()
+        
+            writer.writeheader()
+            for item in l:
+                writer.writerow({
+                    "id": next_id,
+                    "name": item["name"],
+                    "price": item["price"],
+                    "quantity": item["quantity"],
+                })
 
 if __name__ == '__main__':
-    inv = Inventory() 
+    inv = Inventory()
+    inv.add_to_inventory(apple)
