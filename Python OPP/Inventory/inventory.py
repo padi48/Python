@@ -26,8 +26,6 @@ class Product:
 class Inventory(Product):
     def __init__(self, name=None, price=0, quantity=0):
         super().__init__(name, price, quantity)
-        self.inventory = []
-        self.onOrder = []
 
     def print_item(self, item):
         print(f"{item[1]}")
@@ -52,6 +50,13 @@ class Inventory(Product):
     def add_to_inventory(self, item):
         fieldnames = ["id", "name", "price", "quantity"]
 
+        with open("inventory.csv", "r") as file:
+            reader = csv.DictReader(file)
+
+            for row in reader:
+                if item.name in row:
+                    self.add_to_existing(item.quantity)
+
         with open("inventory.csv", "a", newline="\n") as file:
             writer = csv.DictWriter(file, fieldnames=fieldnames)
             next_id = self.new_id()
@@ -66,6 +71,26 @@ class Inventory(Product):
                 "price": item.price,
                 "quantity": item.quantity,
             })
+
+    def add_to_existing(self, new_quantity):
+        l = []
+
+        with open("inventory.csv", "r") as file:
+            reader = csv.DictReader(file)
+
+            for row in reader:
+                l.append(row)
+
+        with open("inventory.csv", "w") as file:
+            writer = csv.DictWriter(file)
+
+            for item in l:
+                writer.writerow({
+                    "id": item["id"],
+                    "name": item["name"],
+                    "price": item["price"],
+                    "quantity": item["quantity"] + new_quantity 
+                })
 
     def create_new_product(self):
         name = str(input("Enter new item's name: "))
@@ -102,21 +127,31 @@ class Inventory(Product):
             for item in reader:
                 print(f"{item[0]} | {item[1]} | ${item[2]} | {item[3]} ")
 
-    def inventory_sum(self):
-        all_quantity = 0
-        all_price = 0
+    def item_sum(self):
+        item_name = input("Name of item you want to see: ")
+        l = []
         with open("inventory.csv", "r") as file:
-            reader = csv.reader(file)
+            reader = csv.DictReader(file)
 
             for row in reader:
-                self.inventory.append(row)
+                l.append(row)
         
-        for i in self.inventory:
-            print(i, end="\n")
+        for i in l:
+            if i["name"] == item_name:
+                print(i["quantity"], i["name"], "available for $", (float(i["price"]) * int(i["quantity"])))
 
+    def inventory_sum(self):
+        l = []
 
-        print(f"{all_quantity} items for ${int(all_price)} available at the moment")
-                    
+        with open("inventory.csv", "r") as file:
+            reader = csv.DictReader(file)
+
+            for row in reader:
+                l.append(row)
+        
+        for i in l:
+            print(i["quantity"], i["name"], "available for $", (float(i["price"]) * int(i["quantity"])))
+
     def edit_item(self):
         print("EDIT ITEM PANEL")
         self.list_inventory()
@@ -147,17 +182,16 @@ class Inventory(Product):
         with open("inventory.csv", "w", newline="\n") as file:
             fieldnames = ["id", "name", "price", "quantity"]
             writer = csv.DictWriter(file, fieldnames=fieldnames)
-            next_id = self.new_id()
-        
+
             writer.writeheader()
             for item in l:
                 writer.writerow({
-                    "id": next_id,
+                    "id": item["id"],
                     "name": item["name"],
                     "price": item["price"],
                     "quantity": item["quantity"],
                 })
-
+                
 if __name__ == '__main__':
     inv = Inventory()
-    inv.add_to_inventory(apple)
+    inv.item_sum()
