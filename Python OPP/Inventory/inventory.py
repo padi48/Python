@@ -42,7 +42,7 @@ class Inventory(Product):
 
     def new_id(self):
         with open("inventory.csv", "r") as file:
-            reader = csv.reader(file)
+            reader = csv.DictReader(file)
             reader_list = list(reader)
 
             return len(reader_list)
