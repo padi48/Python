@@ -8,11 +8,8 @@ Author: Máté Pados
 Idea: github.com/karan
 """
 
-from asyncore import write
 import csv
-import shutil
 from products import *
-from tempfile import NamedTemporaryFile
 from os import path
 
 file_exists = path.isfile("inventory.csv")
@@ -27,19 +24,7 @@ class Inventory(Product):
     def __init__(self, name=None, price=0, quantity=0):
         super().__init__(name, price, quantity)
 
-    def print_item(self, item):
-        print(f"{item[1]}")
-
-    def find_item(self, item_name):
-        with open("inventory.csv", "r") as file:
-            reader = csv.DictReader(file)
-
-            for rows in reader:
-                if rows["name"].lower() == item_name.lower():
-                    print(rows)
-
-            return -1
-
+    #generates next id for item
     def new_id(self):
         with open("inventory.csv", "r") as file:
             reader = csv.DictReader(file)
@@ -47,6 +32,7 @@ class Inventory(Product):
 
             return len(reader_list)
 
+    #adds new item to the csv file
     def add_to_inventory(self, item):
         fieldnames = ["id", "name", "price", "quantity"]
 
@@ -92,6 +78,7 @@ class Inventory(Product):
                     "quantity": item["quantity"] + new_quantity 
                 })
 
+    #generates a new product
     def create_new_product(self):
         name = str(input("Enter new item's name: "))
         price = float(input("Enter new item's price: "))
@@ -100,7 +87,9 @@ class Inventory(Product):
         new_item = Product(name, price, quantity)
         self.add_to_inventory(new_item)
 
+    #deletes item from the csv file
     def delete_from_inventory(self, item=None):
+        self.list_inventory()
         print("Enter the name of the item you want to delete:")
         item = input("- ").lower()
 
@@ -113,11 +102,14 @@ class Inventory(Product):
                 for name in row:
                     if item in name.lower():
                         l.remove(row)
+                        print("Item successfully deleted!")
+
 
         with open("inventory.csv", "w", newline="\n") as file:
             writer = csv.writer(file)
             writer.writerows(l)
 
+    #prints out the whole inventory
     def list_inventory(self):
         print("Current stock:")
 
@@ -127,6 +119,7 @@ class Inventory(Product):
             for item in reader:
                 print(f"{item[0]} | {item[1]} | ${item[2]} | {item[3]} ")
 
+    #prints sum of price, quantity for given item
     def item_sum(self):
         item_name = input("Name of item you want to see: ")
         l = []
@@ -140,6 +133,7 @@ class Inventory(Product):
             if i["name"] == item_name:
                 print(i["quantity"], i["name"], "available for $", (float(i["price"]) * int(i["quantity"])))
 
+    #prints sum of inventory
     def inventory_sum(self):
         l = []
 
@@ -152,6 +146,7 @@ class Inventory(Product):
         for i in l:
             print(i["quantity"], i["name"], "available for $", (float(i["price"]) * int(i["quantity"])))
 
+    #edit item in the csv file
     def edit_item(self):
         print("EDIT ITEM PANEL")
         self.list_inventory()
@@ -191,7 +186,8 @@ class Inventory(Product):
                     "price": item["price"],
                     "quantity": item["quantity"],
                 })
+
+        self.list_inventory()
                 
 if __name__ == '__main__':
     inv = Inventory()
-    inv.item_sum()
