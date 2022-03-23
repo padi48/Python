@@ -1,6 +1,6 @@
 from main import Product
 
-#name, id, price, quantity
+#name, price, quantity
 
 apple = Product("Apple", 112, 0.99, 245)
 banana = Product("Banana", 143, 1.19, 188)
