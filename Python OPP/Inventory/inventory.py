@@ -135,18 +135,15 @@ class Inventory(Product):
 
     #prints sum of inventory
     def inventory_sum(self):
-        l = []
-
         with open("inventory.csv", "r") as file:
             reader = csv.DictReader(file)
 
             for row in reader:
-                l.append(row)
-        
-        for i in l:
-            print(i["quantity"], i["name"], "available for $", (float(i["price"]) * int(i["quantity"])))
+                print(row["quantity"], row["name"], "available for $", (float(row["price"])) * int(row["quantity"]))
 
     #edit item in the csv file
+    #reads all items from the csv file and then re-writes them
+    #so the order doesn't change
     def edit_item(self):
         print("EDIT ITEM PANEL")
         self.list_inventory()
@@ -158,21 +155,21 @@ class Inventory(Product):
 
             for row in reader:
                 l.append(row)
-            
-        for item in l:
-            if row_id == item["id"]:
-                print("Choose from the options below:")
-                choice = input("1. Name\n2. Price\n3. Quantity\n- ")
-                
-                if choice == "1":
-                    new_name = input("Enter new name: ")
-                    item["name"] = new_name
-                if choice == "2":
-                    new_price = input("Enter new price: $")
-                    item["price"] = new_price
-                if choice == "3":
-                    new_quantity = input("Enter new quantity: ")
-                    item["quantity"] = new_quantity
+
+            for item in l:
+                if row_id == item["id"]:
+                    print("Choose from the options below:")
+                    choice = input("1. Name\n2. Price\n3. Quantity\n- ")
+                    
+                    if choice == "1":
+                        new_name = input("Enter new name: ")
+                        item["name"] = new_name
+                    if choice == "2":
+                        new_price = input("Enter new price: $")
+                        item["price"] = new_price
+                    if choice == "3":
+                        new_quantity = input("Enter new quantity: ")
+                        item["quantity"] = new_quantity
 
         with open("inventory.csv", "w", newline="\n") as file:
             fieldnames = ["id", "name", "price", "quantity"]
@@ -188,6 +185,6 @@ class Inventory(Product):
                 })
 
         self.list_inventory()
-                
+
 if __name__ == '__main__':
     inv = Inventory()
