@@ -37,6 +37,10 @@ def display_game_lost():
     game_lost_surface = font_style.render("You lost!", False, white)
     screen.blit(game_lost_surface, (width/2, height/2))
 
+def display_game_won():
+    game_won_surface = font_style.render("You win!", False, white)
+    screen.blit(game_won_surface, (width/2, height/2))
+
 def game_loop():
     snake_x, snake_y = width // 2, height // 2
     x, y = 0, 0
@@ -73,6 +77,12 @@ def game_loop():
             time.sleep(1)
             pg.quit()
         
+        if snake_length == 16:
+            display_game_won()
+            pg.display.update()
+            time.sleep(1)
+            pg.quit
+
         snake_x += x
         snake_y += y
         #print(snake_x, x, snake_y, y)
